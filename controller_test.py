@@ -41,8 +41,9 @@ while (True):
     tmpStr = "\r" + str(index) + " " + str(start) + " " + txt
     print(tmpStr)
 
-    header = [1, tmpStr.__len__(), 101]
-    headPack = struct.pack("!3I", *header)
+    # header = [1, tmpStr.__len__(), 101]
+    # headPack = struct.pack("!3I", *header)
+    headPack = str(tmpStr.__len__()).zfill(12)
     sendData = headPack + tmpStr.encode()
     conn.send(sendData)
 

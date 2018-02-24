@@ -13,7 +13,7 @@ headerSize = 12
 sn = 0
 
 
-def dataHandle(headPack, body):
+def dataHandle(body):
     global sn
     sn += 1
     # print("第%s个数据包" % sn)
@@ -29,6 +29,7 @@ while True:
     # cmd = raw_input("Please input msg:")
     # s.send(cmd)
     data = s.recv(4096)
+    # print data.decode()
     if data:
         dataBuffer += data
         while True:
@@ -38,8 +39,10 @@ while True:
 
             # 读取包头
             # struct中:!代表Network order，3I代表3个unsigned int数据
-            headPack = struct.unpack('!3I', dataBuffer[:headerSize])
-            bodySize = headPack[1]
+            # headPack = struct.unpack('!3I', dataBuffer[:headerSize])
+            # bodySize = headPack[1]
+
+            bodySize = dataBuffer[:headerSize]
 
             # 分包情况处理，跳出函数继续接收数据
             if len(dataBuffer) < headerSize + bodySize:
@@ -48,7 +51,7 @@ while True:
             # 读取包体的内容
             body = dataBuffer[headerSize:headerSize + bodySize]
 
-            dataHandle(headPack, body)
+            dataHandle(body)
 
             # 粘包情况的处理
             dataBuffer = dataBuffer[headerSize + bodySize:]
