@@ -42,7 +42,7 @@ while True:
             # headPack = struct.unpack('!3I', dataBuffer[:headerSize])
             # bodySize = headPack[1]
 
-            bodySize = dataBuffer[:headerSize]
+            bodySize = int(dataBuffer[:headerSize])
 
             # 分包情况处理，跳出函数继续接收数据
             if len(dataBuffer) < headerSize + bodySize:
