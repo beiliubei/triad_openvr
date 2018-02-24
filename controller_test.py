@@ -34,9 +34,11 @@ while (True):
     for each in v.devices["controller_1"].get_pose_euler():
         txt += "%.4f" % each
         txt += " "
-    print("\r" + txt)
 
-    conn.send("\r" + txt)
+    tmpStr = "\r" + str(start) + " " + txt
+    print(tmpStr)
+
+    conn.send(tmpStr)
 
     sleep_time = interval - (time.time() - start)
     if sleep_time > 0:
