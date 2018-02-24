@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+__author__ = 'liubei'
 import triad_openvr
 import time
 import sys
-
+import struct
 import socket
 
-HOST = '192.168.1.61'
+HOST = '192.168.1.121'
 PORT = 8001
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -28,18 +30,26 @@ else:
 conn, addr = s.accept()
 print 'Connected by ', addr
 
+index = 0
 while (True):
     start = time.time()
-    txt = ''
+    txt = ""
     for each in v.devices["controller_1"].get_pose_euler():
         txt += "%.4f" % each
         txt += " "
 
-    tmpStr = "\r" + str(start) + " " + txt
+    tmpStr = "\r" + str(index) + " " + str(start) + " " + txt
     print(tmpStr)
 
-    conn.send(tmpStr)
+    header = [1, tmpStr.__len__(), 101]
+    headPack = struct.pack("!3I", *header)
+    sendData = headPack + tmpStr.encode()
+    conn.send(sendData)
+
+    index += 1
 
     sleep_time = interval - (time.time() - start)
     if sleep_time > 0:
         time.sleep(sleep_time)
+
+s.close()
