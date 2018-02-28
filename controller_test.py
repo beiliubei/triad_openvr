@@ -6,8 +6,8 @@ import sys
 import struct
 import socket
 
-HOST = '192.168.1.121'
-PORT = 8001
+HOST = '192.168.1.135'
+PORT = 7777
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
@@ -38,14 +38,32 @@ while (True):
         txt += "%.4f" % each
         txt += " "
 
-    tmpStr = "\r" + str(index) + " " + str(start) + " " + txt
+    # tmpStr = "\r" + str(index) + " " + str(start) + " " + txt
+    # tmpStr = [start, 1.1759, 0.7149, -0.1582, -28.4829, -84.2658, 41.7791, 0]
+    ss = txt.split(" ")
+    tmpStr = [start, ss[0], ss[1], ss[2], ss[3], ss[4], ss[5], 1]
+
     print(tmpStr)
 
-    # header = [1, tmpStr.__len__(), 101]
-    # headPack = struct.pack("!3I", *header)
-    headPack = str(tmpStr.__len__()).zfill(12)
-    sendData = headPack + tmpStr.encode()
-    conn.send(sendData)
+    header = [3, tmpStr.__len__(), 0, 0]
+    headPack = struct.pack("@4I", *header)
+
+    bodyPack = struct.pack("@I6fI", *tmpStr)
+    # headPack = str(tmpStr.__len__()).zfill(12)
+    sendData = headPack + bodyPack
+    try:
+        conn.send(sendData)
+    except Exception:
+        s.close()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((HOST, PORT))
+        s.listen(5)
+
+        print 'Server start at: %s:%s' % (HOST, PORT)
+        print 'wait for connection...'
+
+        conn, addr = s.accept()
+        print 'Connected by ', addr
 
     index += 1
 
