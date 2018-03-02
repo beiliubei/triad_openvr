@@ -6,7 +6,7 @@ import sys
 import struct
 import socket
 
-HOST = '192.168.1.135'
+HOST = '192.168.1.115'
 PORT = 7777
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,12 +20,14 @@ v = triad_openvr.triad_openvr()
 v.print_discovered_objects()
 
 if len(sys.argv) == 1:
-    interval = 1 / 250
+    interval = 1.0 / 10
 elif len(sys.argv) == 2:
     interval = 1 / float(sys.argv[0])
 else:
     print("Invalid number of arguments")
     interval = False
+
+print "interval : %.2f" % interval
 
 conn, addr = s.accept()
 print 'Connected by ', addr
@@ -41,7 +43,7 @@ while (True):
     # tmpStr = "\r" + str(index) + " " + str(start) + " " + txt
     # tmpStr = [start, 1.1759, 0.7149, -0.1582, -28.4829, -84.2658, 41.7791, 0]
     ss = txt.split(" ")
-    tmpStr = [start, ss[0], ss[1], ss[2], ss[3], ss[4], ss[5], 1]
+    tmpStr = [start, float(ss[0]), float(ss[1]), float(ss[2]), float(ss[3]), float(ss[4]), float(ss[5]), 0]
 
     print(tmpStr)
 
