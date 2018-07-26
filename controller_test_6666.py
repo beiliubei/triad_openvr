@@ -6,8 +6,8 @@ import sys
 import struct
 import socket
 
-HOST = '192.168.192.100'
-PORT = 7777
+HOST = '192.168.1.115'
+PORT = 6666
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
@@ -20,7 +20,7 @@ v = triad_openvr.triad_openvr()
 v.print_discovered_objects()
 
 if len(sys.argv) == 1:
-    interval = 1.0 / 20
+    interval = 1.0 / 10
 elif len(sys.argv) == 2:
     interval = 1 / float(sys.argv[0])
 else:
@@ -43,7 +43,7 @@ while (True):
     # tmpStr = "\r" + str(index) + " " + str(start) + " " + txt
     # tmpStr = [start, 1.1759, 0.7149, -0.1582, -28.4829, -84.2658, 41.7791, 0]
     ss = txt.split(" ")
-    tmpStr = [start, -1 * float(ss[0]), float(ss[1]), float(ss[2]), float(ss[3]), float(ss[4]), float(ss[5]), 0]
+    tmpStr = [start, float(ss[0]), float(ss[1]), float(ss[2]), float(ss[3]), float(ss[4]), float(ss[5]), 0]
 
     print(tmpStr)
 

@@ -9,6 +9,10 @@ import socket
 HOST = '192.168.192.100'
 PORT = 7777
 
+
+v = triad_openvr.triad_openvr()
+v.print_discovered_objects()
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen(5)
@@ -16,8 +20,8 @@ s.listen(5)
 print 'Server start at: %s:%s' % (HOST, PORT)
 print 'wait for connection...'
 
-v = triad_openvr.triad_openvr()
-v.print_discovered_objects()
+#v = triad_openvr.triad_openvr()
+#v.print_discovered_objects()
 
 if len(sys.argv) == 1:
     interval = 1.0 / 20
@@ -36,7 +40,7 @@ index = 0
 while (True):
     start = time.time()
     txt = ""
-    for each in v.devices["controller_1"].get_pose_euler():
+    for each in v.devices["tracker_1"].get_pose_euler():
         txt += "%.4f" % each
         txt += " "
 
