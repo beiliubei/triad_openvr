@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'liubei'
-import triad_openvr
+
 import time
 import sys
 import struct
@@ -21,9 +21,6 @@ print 'wait for connection...'
 
 conn, addr = s.accept()
 print 'Connected by ', addr
-
-# v = triad_openvr.triad_openvr()
-# v.print_discovered_objects()
 
 if len(sys.argv) == 1:
     interval = 1.0 / 20
@@ -69,6 +66,7 @@ def send_mock(conn, s, txt, type):
         conn, addr = s.accept()
         print 'Connected by ', addr
 
+
 def sendStr(conn, s, txt, type):
     tmpStr = txt
     print tmpStr
@@ -93,6 +91,7 @@ def sendStr(conn, s, txt, type):
         conn, addr = s.accept()
         print 'Connected by ', addr
 
+
 def send(conn, s, txt, type):
     tmpStr = [int(0), float(txt[0]), float(txt[1]), float(txt[2]), float(0.0), float(0.0), float(0.0), 0]
     # tmpStr = [int(txt[2]), float(txt[3]) * 1, 0 * float(txt[4]), float(txt[5]), float(txt[6]), float(txt[7]),
@@ -108,17 +107,8 @@ def send(conn, s, txt, type):
     sendData = headPack + bodyPack
     try:
         conn.send(sendData)
-    except Exception:
-        s.close()
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((HOST, PORT))
-        s.listen(5)
-
-        print 'Server start at: %s:%s' % (HOST, PORT)
-        print 'wait for connection...'
-
-        conn, addr = s.accept()
-        print 'Connected by ', addr
+    except Exception as e:
+        print(e)
 
 
 def vr_body_slam_mock_server(f):
@@ -136,33 +126,36 @@ def vr_body_slam_mock_server(f):
                 send_mock(conn, s, strs, 0)
             time.sleep(1.0 / 100)
 
+
 def cam_server(f):
     done = False
-    while(True):
+    while (True):
         print "cam server alive"
         if not os.path.exists(f):
             print "%s file not exist " % f
-            send(conn, s, "-100 -100 -100", 5)
+            send(conn, s, ["-100.0", "-100.0", "-100.0"], 5)
             time.sleep(1)
-        #if done:
-        #    print "file has read done"
-        #    continue
+            continue
+
+        if done:
+            print "%s file has done read" % f
+            continue
         try:
             with open(f) as ff:
-                #done = True
-
                 contents = [x.strip() for x in ff.readlines()]
                 for content in contents:
                     strs = content.split(" ")
                     print "<<<<< reading file <<<<<<"
                     send(conn, s, strs, 5)
-                    time.sleep(1.0 / 10)
-                #send camera end
-                send(conn, s, "-100 -100 -100", 5)
+                    time.sleep(1.0 / 100)
+                # send camera end
+                send(conn, s, ["-100.0", "-100.0", "-100.0"], 5)
                 time.sleep(1)
-        except Exception,e:
+                done = True
+        except Exception, e:
             print(e)
-            
+
+
 def vr_server(conn, s):
     v = triad_openvr.triad_openvr()
     v.print_discovered_objects()
@@ -208,7 +201,14 @@ def vr_server(conn, s):
 
 
 try:
-    #thread.start_new_thread(vr_server, (conn, s))
+
+    useVr = False
+    if useVr:
+        import triad_openvr
+        v = triad_openvr.triad_openvr()
+        v.print_discovered_objects()
+        thread.start_new_thread(vr_server, (conn, s))
+
     thread.start_new_thread(cam_server, ("cam/cam_path.txt",))
     thread.start_new_thread(vr_body_slam_mock_server, ("bakupup/comm_client_log_07_08_04.txt",))
 except Exception, e:
